@@ -9,7 +9,7 @@ load_dotenv()
 
 NB_GENERATION = int(os.getenv("NB_GENERATION"))
 NB_PLANS = int(os.getenv("NB_PLANS"))
-PROB_MUTATIONS = float(os.getenv("PROB_MUtATIONS"))
+PROB_MUTATIONS = float(os.getenv("PROB_MUTATIONS"))
 NB_REPRODUCTION = round(NB_PLANS * 0.2)
 
 if __name__ == '__main__':
