@@ -1,14 +1,16 @@
 from Group import *
 from GA import *
 from Constraint import *
-
+from dotenv import load_dotenv
+import os
 import time
 
+load_dotenv()
 
-NB_GENERATION = 200
-NB_PLANS = 100
+NB_GENERATION = int(os.getenv("NB_GENERATION"))
+NB_PLANS = int(os.getenv("NB_PLANS"))
+PROB_MUTATIONS = float(os.getenv("PROB_MUtATIONS"))
 NB_REPRODUCTION = round(NB_PLANS * 0.2)
-PROB_MUTATIONS = 0.01
 
 if __name__ == '__main__':
     ' le plan '
@@ -30,6 +32,27 @@ if __name__ == '__main__':
         [8, 0],
         [8, 1],
         [8, 2],
+        [8, 3],
+        [8, 4],
+        [8, 5],
+        [8, 6],
+        [8, 7],
+        [8, 8],
+        [8, 9],
+        [8, 10],
+        [8, 12],
+        [8, 12],
+        [8, 13],
+        [8, 14],
+        [8, 15],
+        [8, 16],
+        [8, 17],
+        [8, 18],
+        [8, 19],
+        [8, 20],
+        [8, 21],
+        [8, 22],
+        [8, 23],
     ])
     ct_milieu = Constraint("milieu")
     ct_milieu.set_concerned_seats([

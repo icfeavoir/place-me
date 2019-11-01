@@ -49,7 +49,7 @@ class GA:
         for plan in self.listPlans:
             r = random.randint(0, 100) / 100
             if r < self.prob_mutation:
-                # if lucky
+                # if lucky we mutate 2 seats
                 random_line_1 = random.randint(0, len(plan.placement) - 1)
                 random_cell_1 = random.randint(0, len(plan.placement[random_line_1]) - 1)
                 name1 = plan.get_people_at(random_line_1, random_cell_1)
