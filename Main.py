@@ -5,7 +5,7 @@ import csv
 
 load_dotenv()
 
-TEST = bool(os.getenv("TEST"))
+TEST = int(os.getenv("TEST")) == 1
 
 if __name__ == '__main__':
 
