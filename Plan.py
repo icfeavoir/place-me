@@ -1,4 +1,5 @@
 import random
+import copy
 
 
 class Plan:
@@ -8,11 +9,13 @@ class Plan:
     constraints = []
 
     def __str__(self):
-        res = "[SCORE: " + str(self.score) + "]\n"
+        res = ""
         for line_number, cells in enumerate(self.placement):
             for cell_number, people in enumerate(cells):
-                text = str(people)
-                if not self.is_allowed(line_number, cell_number):
+                text = ""
+                if people is not None:
+                    text = str(people.name) + " - " + str(people.nb)
+                elif not self.is_allowed(line_number, cell_number):
                     text = "xx"
                 elif self.get_people_at(line_number, cell_number) is None:
                     text = "nn"
@@ -31,7 +34,7 @@ class Plan:
     def create_seats(self):
         for line_number, cells in enumerate(Plan.grid):
             self.placement.append([])
-            for cell_number, cellValue in enumerate(cells):
+            for cellValue in enumerate(cells):
                 self.placement[line_number].append(None)
 
     def get_people_at(self, line, cell):
@@ -42,7 +45,6 @@ class Plan:
         self.calculate_score()
 
     def gen_random(self):
-        # AUTRE APPROCHE
         # on prend les personnes une par une et on les place au hasard
         list_seats = []
         for line_number, cells in enumerate(Plan.grid):
@@ -51,6 +53,8 @@ class Plan:
                     list_seats.append([line_number, cell_number])
 
         full = False
+        group_ranked_by_constraints = copy.deepcopy(Plan.groups)
+        group_ranked_by_constraints.sort(key=lambda x: x.constraint is None, reverse=False)
         for group in Plan.groups:
             if full:
                 break
@@ -73,77 +77,48 @@ class Plan:
                             if not group.constraint.is_allowed(line_number, cell_number):
                                 add_allowed = False
 
-                        # TODO: trouver mieux que 100
-                        if tries > 100:
+                        if tries > len(list_seats) * len(list_seats):
                             add_allowed = True
                         if add_allowed:
-                            self.set_people_at(line_number, cell_number, group.name)
+                            self.set_people_at(line_number, cell_number, group)
                             del list_seats[index_selected]
                             break
                         else:
                             tries += 1
-
-
-        # people = []
-        # for group in Plan.groups:
-        #     for groupNb in range(group.nb):
-        #         people.append(group)
-
-        # for line_number, cells in enumerate(Plan.grid):
-        #     self.placement.append([])
-        #     for cell_number, cellValue in enumerate(cells):
-        #         if len(people) == 0:
-        #             ' on a fait le tour des gens, on met None à toutes les places '
-        #             self.placement[line_number].append(None)
-        #         elif not self.is_allowed(line_number, cell_number):
-        #             ' siège non autorisé '
-        #             self.placement[line_number].append(None)
-        #         else:
-        #             ' on prend une personne au hasard et on la place '
-        #             add_allowed = True
-        #             tries = 0
-        #             while True:
-        #                 index_selected = random.randint(0, len(people) - 1)
-        #                 people_selected = people[index_selected]
-        #                 if people_selected.constraint is not None:
-        #                     if people_selected.constraint.is_allowed(line_number, cell_number):
-        #                         add_allowed = True
-        #                     else:
-        #                         add_allowed = False
-        #                         tries += 1
-        #
-        #                 if tries > 100:
-        #                     print("tries > 100")
-        #                 # TODO: Trouver mieux que '100' pour le max d'essais
-        #                 if add_allowed or tries > 100:
-        #                     # On ajoute la personne à cette place si :
-        #                         # - Pas de contrainte
-        #                         # - La place match avec la contraine
-        #                         # - On a testé 100 fois et tjr pas trouvé, tant pis pour la contrainte
-        #                     self.placement[line_number].append(people_selected.name)
-        #                     del people[index_selected]
-        #                     break  # Simule un do while
-
         self.calculate_score()
 
     def calculate_score(self):
         """
         quand à côté : +10
-        quand un au dessus ou en dessous : +2 """
+        quand un au dessus ou en dessous : +2
+        contrainte respectée : +5
+        """
 
         score = 0
         for line_number, cells in enumerate(self.placement):
             for cell_number, people in enumerate(cells):
                 if people is not None:
+                    left, right, top, bottom = None, None, None, None
+                    if cell_number > 0 and self.get_people_at(line_number, cell_number - 1):
+                        left = self.get_people_at(line_number, cell_number - 1)
+                    if cell_number < len(self.placement[line_number]) - 1 and self.get_people_at(line_number, cell_number + 1):
+                        right = self.get_people_at(line_number, cell_number + 1)
+                    if line_number > 0 and self.get_people_at(line_number - 1, cell_number):
+                        top = self.get_people_at(line_number - 1, cell_number)
+                    if line_number < len(self.placement) - 1 and self.get_people_at(line_number + 1, cell_number):
+                        bottom = self.get_people_at(line_number + 1, cell_number)
+
                     # people besides
-                    if ((cell_number > 0 and self.get_people_at(line_number, cell_number - 1) == people) or
-                            (cell_number < len(self.placement[line_number]) - 1 and
-                             self.get_people_at(line_number, cell_number + 1) == people)):
+                    if (left is not None and left.name == people.name) or (right is not None and right.name == people.name):
                         score += 10
                     # people top or bottom
-                    if ((line_number > 0 and self.get_people_at(line_number - 1, cell_number) == people) or
-                            (line_number < len(self.placement) - 1 and self.get_people_at(line_number + 1, cell_number) == people)):
+                    if (top is not None and top.name == people.name) or (bottom is not None and bottom.name == people.name):
                         score += 2
+
+                    # contrainte non respectée
+                    if people.constraint is not None and people.constraint.is_allowed(line_number, cell_number):
+                        score += 5
+
         self.score = score
         return score
 
@@ -176,15 +151,15 @@ class Plan:
             actual_nb = 0
             for line_number, cells in enumerate(self.placement):
                 for cell_number, people in enumerate(cells):
-                    if people == group.name:
+                    if people is not None and people.name == group.name:
                         actual_nb += 1
 
             if actual_nb > nb_to_find:
                 for i in range(nb_to_find, actual_nb):
-                    to_much_people.append(group.name)
+                    to_much_people.append(group.name)       # TO MUCH PEOPLE : le nom str du groupe
             elif nb_to_find > actual_nb:
                 for i in range(actual_nb, nb_to_find):
-                    lost_people.append(group.name)
+                    lost_people.append(group)       # LOST PEOPLE : l'objet
 
         # 2. On reprend le plan, on corrige les places interdites en enlevant les personnes dessus
         for line_number, cells in enumerate(self.placement):
@@ -197,12 +172,12 @@ class Plan:
         # Ensuite on enlève les personnes en trop
         for line_number, cells in enumerate(self.placement):
             for cell_number, people in enumerate(cells):
-                if people in to_much_people:
-                    index_to_much = to_much_people.index(people)
+                if people is not None and people.name in to_much_people:
+                    index_to_much = to_much_people.index(people.name)
                     del to_much_people[index_to_much]
                     self.set_people_at(line_number, cell_number, None)
 
-                ' Si (après corrections) cette place est dispo, on y met une personne perdue'
+                # Si (après corrections) cette place est dispo, on y met une personne perdue'
                 if len(lost_people) > 0 and self.is_available(line_number, cell_number):
                     self.set_people_at(line_number, cell_number, lost_people[0])
                     del lost_people[0]

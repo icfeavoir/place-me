@@ -5,18 +5,18 @@ from Plan import *
 class GA:
 
     def __init__(self, list_plans, nb_reproduction, prob_mutation):
-        self.listPlans = list_plans
+        self.list_plans = list_plans
         self.nb_reproduction = nb_reproduction
         self.prob_mutation = prob_mutation
 
     def __str__(self):
         res = ""
-        for plan in self.listPlans:
+        for plan in self.list_plans:
             res += str(plan) + "\n"
         return res
 
     def sort_plans(self):
-        self.listPlans.sort(key=lambda x: x.score, reverse=True)
+        self.list_plans.sort(key=lambda x: x.score, reverse=True)
 
     def roulette_wheel_selection(self):
         # Technique de sélection de plan.
@@ -26,11 +26,11 @@ class GA:
         self.sort_plans()
 
         somme_score = 0
-        for plan in self.listPlans:
+        for plan in self.list_plans:
             somme_score += plan.score
         choosed_score = random.randint(0, somme_score)
         score_counter = 0
-        for plan in self.listPlans:
+        for plan in self.list_plans:
             score_counter += plan.score
             if score_counter >= choosed_score:
                 return plan
@@ -43,10 +43,10 @@ class GA:
             father = self.roulette_wheel_selection()
             new_plan.create_from_parents(copy.deepcopy(mother), copy.deepcopy(father))
             new_plan.correct_placement()
-            self.listPlans.append(new_plan)
+            self.list_plans.append(new_plan)
 
     def mutate(self):
-        for plan in self.listPlans:
+        for plan in self.list_plans:
             r = random.randint(0, 100) / 100
             if r < self.prob_mutation:
                 # if lucky we mutate 2 seats
@@ -62,4 +62,4 @@ class GA:
 
     def keep_only(self, nb):
         self.sort_plans()
-        self.listPlans = self.listPlans[:nb]
+        self.list_plans = self.list_plans[:nb]
