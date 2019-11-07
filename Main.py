@@ -10,6 +10,8 @@ TEST = int(os.getenv("TEST")) == 1
 if __name__ == '__main__':
 
     chief = Chief()
+    if not TEST:
+        chief.start(False)
 
     def test_with_val(ch, writer, nb_gen, nb_p, prob_m, nb_r):
         ch.NB_GENERATION = nb_gen

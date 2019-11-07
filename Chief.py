@@ -22,9 +22,9 @@ class Chief:
         self.PROB_MUTATIONS = float(os.getenv("PROB_MUTATIONS"))
         self.NB_REPRODUCTION = round(self.NB_PLANS * float(os.getenv("NB_REPRODUCTION")))
 
-        self.PORT = float(os.getenv("PORT"))
+        self.PORT = int(os.getenv("PORT"))
 
-    def start(self, test_mode = False):
+    def start(self, test_mode=False):
         if test_mode:
             return self.test_mode()
         else:

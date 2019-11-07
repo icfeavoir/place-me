@@ -9,7 +9,6 @@ class Server:
     def __init__(self, chief, port):
         self.data = None
         self.chief = chief
-        self.chief.set_server(self)
         self.port = port
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
