@@ -67,7 +67,6 @@ class Chief:
             "NB_REPRODUCTION = " + str(self.NB_REPRODUCTION )
         )
 
-
         time_start = time.time()
 
         # INIT
@@ -80,10 +79,20 @@ class Chief:
             list_plans.append(plan)
         ga = GA(list_plans, self.NB_REPRODUCTION, self.PROB_MUTATIONS)
 
+        best_score = -1
+        best_at = 0
+        total = 0
         for i in range(self.NB_GENERATION):
             ga.reproduce()
             ga.keep_only(self.NB_PLANS)
             ga.mutate()
+
+            ga.sort_plans()
+            current_score = ga.list_plans[0].score
+            total += 1
+            if current_score > best_score:
+                best_score = current_score
+                best_at = total
 
         ga.sort_plans()
 
@@ -97,7 +106,7 @@ class Chief:
         # print("[SCORE: " + str(best_plan.score) + "]")
         # print("EXECUTED IN " + str(round(time_end - time_start, 3)) + " seconds")
 
-        return best_plan, round(time_end - time_start, 3)
+        return best_plan, round(time_end - time_start, 3), best_at, total
 
     def test_mode(self):
         # le plan
