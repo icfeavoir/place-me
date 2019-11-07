@@ -44,7 +44,6 @@ if __name__ == '__main__':
             test_with_val(chief, results_writer, 1000, 100, 0.2, 0.5)
             test_with_val(chief, results_writer, 1000, 200, 0.2, 0.5)
             test_with_val(chief, results_writer, 500, 100, 0.4, 0.6)
-            test_with_val(chief, results_writer, 500, 100, 0.4, 0.6)
             test_with_val(chief, results_writer, 500, 100, 0.6, 0.6)
             test_with_val(chief, results_writer, 500, 100, 0.6, 0.8)
 
