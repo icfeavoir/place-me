@@ -1,6 +1,7 @@
 .env
 venv/
 __pycache__/
-resa.xlsm
+*.xlsm
+*.csv
 .idea/
 
